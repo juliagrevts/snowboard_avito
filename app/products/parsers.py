@@ -1,6 +1,7 @@
 import requests
 
-def get_avito_page_html(url):
+
+def get_page_html(url):
     try:
         result = requests.get(url)
         result.raise_for_status()
