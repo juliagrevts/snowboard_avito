@@ -8,7 +8,7 @@ HEADERS = {
 SEARCH_QUERY_URL = 'https://www.avito.ru/moskva/sport_i_otdyh/zimnie_vidy_sporta-ASgBAgICAUTKAtoK?bt=1&cd=1&q=сноуборд'
 
 
-def get_avito_page_html(url, params=None, headers=None):
+def get_page_html(url, params=None, headers=None):
     try:
         result = requests.get(url, params=params, headers=headers)
         result.raise_for_status()
@@ -19,7 +19,7 @@ def get_avito_page_html(url, params=None, headers=None):
 def get_snowboard_page_link(max_pages=200):
     snowboards_links_list = []
     for page in range(1, max_pages):
-        avito_page_html = get_avito_page_html(
+        avito_page_html = get_page_html(
             SEARCH_QUERY_URL,
             params={'p': page},
             headers=HEADERS
