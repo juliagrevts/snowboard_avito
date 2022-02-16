@@ -31,6 +31,7 @@ def get_snowboard_page_link(max_pages=200):
         for snowboard_snippet in snowboards_snippets_on_page:
             snowboard_page_link = snowboard_snippet.find('a', class_='link-link-MbQDP')['href']
             snowboards_links_list.append(snowboard_page_link)
+            return snowboards_links_list
         
         # Check that the product pages on the web-site are over
         next_button_deactivated = soup.find('span', class_='pagination-item_readonly-_rHaf')
