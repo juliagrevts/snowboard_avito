@@ -27,7 +27,7 @@ def get_page_html(url, params=None, headers=None):
         print('Ошибка на сервере - {}'.format(exception))
 
 
-def get_snowboard_page_link(max_pages=200):
+def get_snowboard_pages_links(max_pages=200):
     snowboards_links_list = []
     for page in range(1, max_pages):
         avito_page_html = get_page_html(
@@ -42,12 +42,12 @@ def get_snowboard_page_link(max_pages=200):
         for snowboard_snippet in snowboards_snippets_on_page:
             snowboard_page_link = ''.join(['https://www.avito.ru', snowboard_snippet.find('a', class_='link-link-MbQDP')['href']])
             snowboards_links_list.append(snowboard_page_link)
-            return snowboards_links_list
 
         # Check that the product pages on the web-site are over
         next_button_deactivated = soup.find('span', class_='pagination-item_readonly-_rHaf')
         if next_button_deactivated and 'След.' in next_button_deactivated.text:
             break
+    return snowboards_links_list
 
 
 def parse_placement_date(ad_placement_date):
@@ -70,11 +70,14 @@ def parse_placement_date(ad_placement_date):
 
 
 def get_snowboard_page_html():
-    snowboards_links_list = get_snowboard_page_link()
+    snowboards_links_list = get_snowboard_pages_links()
     for snowboard_link in snowboards_links_list:
-        snowboard_page_html = get_page_html(snowboard_link)
-        if not snowboard_page_html:
-            continue
+        parse_snowboard_page(snowboard_link)
+
+
+def parse_snowboard_page(snowboard_link):
+    snowboard_page_html = get_page_html(snowboard_link, headers=HEADERS)
+    if snowboard_page_html:
         soup = BeautifulSoup(snowboard_page_html, 'html.parser')
         product_name = soup.find('span', class_='title-info-title-text').text
         ad_number = soup.find('div', class_='item-view-search-info-redesign').find('span').text
