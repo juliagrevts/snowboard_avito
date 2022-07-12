@@ -87,7 +87,7 @@ def get_photo_links_with_exception(driver, snowboard: list):
             search_forward_button = driver.find_element(By.CLASS_NAME, 'image-frame-controlButton-2fg1E')
             for i in range(len(photo_links_list)):
                 try:
-                    search_forward_button.click()
+                    driver.execute_script("arguments[0].click();", search_forward_button)
                     photo_link = driver.find_element(By.CLASS_NAME, 'image-frame-wrapper-28gKD').get_attribute('data-url')
                     snowboard.append(photo_link)
                 except NoSuchElementException as element_exception:
