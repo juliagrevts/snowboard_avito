@@ -132,3 +132,5 @@ dmypy.json
 config.py
 *.db
 .DS_Store
+
+snowboards_links.txt

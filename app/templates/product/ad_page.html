@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-9">
+            <br>
+            <h3 class="text-center block">{{ page_title }}</h3>
+            
+            
+            <div class="row">
+            
+            <div class="col-5 snowboard_photo">
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% if snowboard.photo_links %}
+                    {% for photo_link in snowboard.photo_links %}
+                    <div class="carousel-item {% if loop.index == 1 %} active {% endif %}">  
+                        <img src="{{ photo_link.photo_link }}" class="d-block w-100" alt="Нет фото">
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            </div>
+
+            <div class="col-7">
+            <p class="text-end text-muted">{{ snowboard.ad_placement_date.strftime('%d.%m.%Y в %H:%M') }}</p>
+            <p><big><b>{{ snowboard.price }} ₽</b></big></p>
+            {% if snowboard.ad_text %}
+            <p>{{ snowboard.ad_text }}</p>
+            {% endif %}
+            {% if snowboard.address %}
+            <p>{{ snowboard.address }}</p>
+            {% endif %}
+            </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
