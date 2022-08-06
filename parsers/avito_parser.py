@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from lib2to3.pgen2 import driver
 import locale
 import platform
 import random
@@ -7,8 +6,11 @@ import time
 import sys
 
 from selenium import webdriver
-from selenium.common.exceptions import (SessionNotCreatedException,
-    NoSuchElementException, WebDriverException)
+from selenium.common.exceptions import (
+    SessionNotCreatedException,
+    NoSuchElementException,
+    WebDriverException
+)
 from selenium.webdriver.common.by import By
 
 from app.db import db
@@ -36,7 +38,7 @@ def launch_browser():
 def get_snowboard_pages_links(
     url=SEARCH_QUERY_URL, max_pages=101, filename: str = 'snowboards_links.txt'
 ):
-    """This function launches the browser, that navigating through the pages of the web-site,
+    """This function launches the browser that navigates through the pages of the web-site,
     collects snowboards links and writes them to the file
     """
     driver = launch_browser()
