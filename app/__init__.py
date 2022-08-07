@@ -2,6 +2,7 @@ from flask import Flask
 from flask_migrate import Migrate
 
 from app.db import db
+from app.product.models import Snowboard, SnowboardPhotoLink
 from app.product.views import blueprint as product_blueprint
 
 
