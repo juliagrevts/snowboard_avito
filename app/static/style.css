@@ -1,0 +1,14 @@
+.ad_text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.block {
+    padding: 20px;
+}
+
+.snowboard_photo img {
+    max-width: 100%;
+}
