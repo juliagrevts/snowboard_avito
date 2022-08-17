@@ -6,7 +6,11 @@ import time
 import sys
 
 from selenium import webdriver
-from selenium.common.exceptions import SessionNotCreatedException, NoSuchElementException, WebDriverException
+from selenium.common.exceptions import (
+    SessionNotCreatedException,
+    NoSuchElementException,
+    WebDriverException
+)
 from selenium.webdriver.common.by import By
 
 from app.db import db
@@ -31,21 +35,30 @@ def launch_browser():
         sys.exit()
 
 
-def get_snowboard_pages_links(url, max_pages=101):
-    """This function launches the browser, that navigating through the pages of the web-site,
+def get_snowboard_pages_links(
+    url=SEARCH_QUERY_URL, max_pages=101, filename: str = 'snowboards_links.txt'
+):
+    """This function launches the browser that navigates through the pages of the web-site,
     collects snowboards links and writes them to the file
     """
     driver = launch_browser()
+    links_set = set()
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            links_set.add(line)
     for page in range(1, max_pages):
         driver.get(url.replace('&p=1', f'&p={page}'))
         snowboard_snippets_on_page = driver.find_elements(By.CLASS_NAME, 'iva-item-content-rejJg')
         for snowboard_snippet in snowboard_snippets_on_page:
             try:
-                snowboard_page_link = snowboard_snippet.find_element(By.CLASS_NAME, 'link-link-MbQDP').get_attribute('href')
-                with open('snowboards_links.txt', 'a', encoding='utf-8') as f:
-                    f.write(snowboard_page_link + '\n')
-                time.sleep(random.randint(5, 15))
-            except NoSuchElementException as element_exception:
+                snowboard_page_link = snowboard_snippet.find_element(
+                    By.CLASS_NAME, 'link-link-MbQDP'
+                ).get_attribute('href')
+                if not snowboard_page_link[:-1] in links_set:
+                    with open(filename, 'a', encoding='utf-8') as f:
+                        f.write(snowboard_page_link + '\n')
+                time.sleep(random.randint(5, 15)) # to avoid being blocked by Avito website
+            except NoSuchElementException:
                 print('Ошибка при запуске драйвера или сборе ссылок')
                 continue
     driver.quit()
@@ -70,38 +83,49 @@ def parse_placement_date(ad_placement_date):
         return today
 
 
-def get_html_element_with_exception(driver, element_name: str):
+def get_html_element(driver, element_name: str):
     try:
         element = driver.find_element(By.CLASS_NAME, element_name) 
-    except NoSuchElementException as element_exception:
+    except NoSuchElementException:
         element = None
     if element:
         element = element.text
     return element
 
 
-def get_photo_links_with_exception(driver, snowboard: list):
+def get_photo_links(driver):
+    photo_links = []
     try:
-        photo_links_list = driver.find_elements(By.CLASS_NAME, 'images-preview-previewImageWrapper-JwvC5')
+        photo_links_list = driver.find_elements(
+            By.CLASS_NAME, 'images-preview-previewImageWrapper-JwvC5'
+        )
         if photo_links_list:
-            search_forward_button = driver.find_element(By.CLASS_NAME, 'image-frame-controlButton-2fg1E')
+            search_forward_button = driver.find_element(
+                By.CLASS_NAME, 'image-frame-controlButton-2fg1E'
+            )
             for i in range(len(photo_links_list)):
                 try:
-                    driver.execute_script("arguments[0].click();", search_forward_button)
-                    photo_link = driver.find_element(By.CLASS_NAME, 'image-frame-wrapper-28gKD').get_attribute('data-url')
-                    snowboard.append(photo_link)
-                except NoSuchElementException as element_exception:
-                    snowboard.append(None)
+                    search_forward_button.click()
+                    photo_link = driver.find_element(
+                        By.CLASS_NAME, 'image-frame-wrapper-28gKD'
+                    ).get_attribute('data-url')
+                    photo_links.append(photo_link)
+                except NoSuchElementException:
+                    photo_links.append(None)
         else:
-            photo_link = driver.find_element(By.CLASS_NAME, 'image-frame-wrapper-28gKD').get_attribute('data-url')
-            snowboard.append(photo_link)
-    except NoSuchElementException as element_exception:
-        snowboard.append(None)
+            photo_link = driver.find_element(
+                By.CLASS_NAME, 'image-frame-wrapper-28gKD'
+            ).get_attribute('data-url')
+            photo_links.append(photo_link)
+    except NoSuchElementException:
+        photo_links.append(None)
+    
+    return photo_links
 
 
-def parse_html_elements(driver, snowboard_link):
+def parse_snowboard(driver, snowboard_link):
     driver.get(snowboard_link)
-    snowboard = {'photos_links_list': []}
+    snowboard = {}
 
     elements_names = [
         'title-info-title-text', 'style-item-metadata-bzKjw', 'js-item-price',
@@ -117,75 +141,65 @@ def parse_html_elements(driver, snowboard_link):
     }
 
     for element_name in elements_names:
-        element = get_html_element_with_exception(driver, element_name)
+        element = get_html_element(driver, element_name)
         if element and element_name =='style-item-metadata-bzKjw':
             element = parse_placement_date(element)
-        if element and (element_name == 'js-item-price' or element_name == 'style-item-description-text-SzN56'):
+        if element and element_name == 'js-item-price':
             element = element.replace('\xa0', '')
+        if element and element_name == 'style-item-description-text-SzN56':
+            element = element.replace('\xa0', ' ')
         beautiful_name = element_name_to_snowboard_feature[element_name]
         snowboard[beautiful_name] = element
     
-    get_photo_links_with_exception(driver, snowboard['photos_links_list'])
+    snowboard['photos_links_list'] = get_photo_links(driver)
                
     return snowboard
 
 
-def save_product():
+def save_all_snowboards(filename: str = 'snowboards_links.txt'):
     driver = launch_browser()
-    with open('snowboards_links.txt', 'r', encoding='utf-8') as f:
+    with open(filename, 'r', encoding='utf-8') as f:
         for snowboard_link in f:
             try:
-                snowboard = parse_html_elements(driver, snowboard_link)
+                snowboard = parse_snowboard(driver, snowboard_link)
                 if not snowboard:
                     time.sleep(random.randint(5, 15)) 
                     continue
                 if snowboard['product_name'] and snowboard['ad_placement_date'] and snowboard['price']:
-                    new_snowboard_id = save_snowboard(
-                        snowboard['product_name'],
-                        snowboard['ad_placement_date'],
-                        snowboard['price'],
-                        driver.current_url,
-                        snowboard['address'],
-                        snowboard['ad_text']
-                    )
-                    for photo_link in snowboard['photos_links_list']:
-                        save_photo_links(photo_link, new_snowboard_id)
+                    save_snowboard(driver, snowboard)
                     time.sleep(random.randint(5, 15)) 
                 else:
                     time.sleep(random.randint(5, 15)) 
                     continue
             except WebDriverException as driver_exception:
-                print(f'Парсинг элементов сноуборда {snowboard_link} упал из-за {driver_exception}, иду дальше')
+                print(f'Парсинг элементов сноуборда {snowboard_link} упал '
+                'из-за {driver_exception}, иду дальше')
                 continue 
             
     driver.close()
 
 
-def save_snowboard(product_name, ad_placement_date, price, url=None, address=None, ad_text=None, user_id=None):
-    snowboards_exists = Snowboard.query.filter(
-        Snowboard.product_name == product_name, 
-        Snowboard.price == price,
-        Snowboard.ad_text == ad_text,
-        Snowboard.user_id == user_id
-    ).count()
+def save_snowboard(driver, snowboard):
+    snowboards_exists = Snowboard.query.filter(Snowboard.url == driver.current_url).count()
     if not snowboards_exists:
         new_snowboard = Snowboard(
-            product_name=product_name,
-            ad_placement_date=ad_placement_date,
-            price=price,
-            url=url,
-            address=address,
-            ad_text=ad_text,
-            user_id=user_id
+            product_name=snowboard['product_name'],
+            ad_placement_date=snowboard['ad_placement_date'],
+            price=snowboard['price'],
+            url=driver.current_url,
+            address=snowboard['address'],
+            ad_text=snowboard['ad_text']
         )
         db.session.add(new_snowboard)
         db.session.commit()
-        return new_snowboard.id
-
-
-def save_photo_links(photo_link, snowboard_id):
-    photo_link_exists = SnowboardPhotoLink.query.filter(SnowboardPhotoLink.photo_link == photo_link).count()
-    if not photo_link_exists:
-        new_photo_link = SnowboardPhotoLink(photo_link=photo_link, snowboard_id=snowboard_id)
-        db.session.add(new_photo_link)
-        db.session.commit()
+        for photo_link in snowboard['photos_links_list']:
+            photo_link_exists = SnowboardPhotoLink.query.filter(
+                SnowboardPhotoLink.photo_link == photo_link
+            ).count()
+            if not photo_link_exists:
+                new_photo_link = SnowboardPhotoLink(
+                    photo_link=photo_link,
+                    snowboard_id=new_snowboard.id
+                )
+                db.session.add(new_photo_link)
+                db.session.commit()

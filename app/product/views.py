@@ -11,9 +11,13 @@ blueprint = Blueprint('product', __name__)
 def index(page):
     title = 'КАТАЛОГ СНОУБОРДОВ'
     per_page = 15
-    snowboards_pages_pagination = Snowboard.query.order_by(Snowboard.ad_placement_date.desc()).paginate(page, per_page, False)
+    snowboards_pages_pagination = Snowboard.query.order_by(
+        Snowboard.ad_placement_date.desc()
+    ).paginate(page, per_page, False)
     return render_template(
-        'product/index.html', page_title=title, snowboards_pages_pagination=snowboards_pages_pagination
+        'product/index.html',
+        page_title=title,
+        snowboards_pages_pagination=snowboards_pages_pagination
     )
 
 
