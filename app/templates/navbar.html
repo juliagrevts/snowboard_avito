@@ -13,15 +13,18 @@
             </ul>
             <form class="d-flex">
                 <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search">
-                <button class="btn btn-light" type="submit">Поиск</button>
+                <button class="btn btn-light me-2" type="submit">Поиск</button>
             </form>
+
             <ul class="navbar-nav">
                 {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="">{{ current_user.username }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('user.logout') }}">Выйти</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link active dropdown-toggle" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ current_user.username }}</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('user.profile') }}">Мои объявления</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('product.create_ad') }}">Разместить объявление</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('user.logout') }}">Выйти</a></li>
+                        </ul>
                     </li>
                 {% else %}
                     <li class="nav-item">
@@ -32,6 +35,7 @@
                     </li>
                 {% endif %}
             </ul>
+
         </div>
     </div>
 </nav>

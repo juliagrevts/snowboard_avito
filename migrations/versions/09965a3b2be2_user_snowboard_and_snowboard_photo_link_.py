@@ -1,8 +1,8 @@
-"""User table, snowboard table and snowboard_photo_link table created
+"""user, snowboard and snowboard_photo_link tables created
 
-Revision ID: 47a20a84fa96
+Revision ID: 09965a3b2be2
 Revises: 
-Create Date: 2022-07-19 23:38:42.406539
+Create Date: 2022-08-16 19:40:24.151078
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '47a20a84fa96'
+revision = '09965a3b2be2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,11 +34,14 @@ def upgrade():
     sa.Column('address', sa.Text(), nullable=True),
     sa.Column('price', sa.String(length=20), nullable=False),
     sa.Column('ad_text', sa.Text(), nullable=True),
+    sa.Column('phone_number', sa.String(length=30), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('url', sa.String(), nullable=True),
+    sa.Column('mongodb_id', sa.String(), nullable=True),
+    sa.Column('hidden', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('product_name', 'price', 'ad_text', 'user_id', 'url')
+    sa.UniqueConstraint('product_name', 'price', 'ad_text', 'user_id')
     )
     op.create_index(op.f('ix_snowboard_ad_text'), 'snowboard', ['ad_text'], unique=False)
     op.create_index(op.f('ix_snowboard_price'), 'snowboard', ['price'], unique=False)

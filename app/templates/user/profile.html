@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        
+        <div class="col-1">
+            <big><b>{{ current_user.username }}</b></big>
+            <p>{{ current_user.email }}</p>
+            <a class="btn btn-primary" href="{{ url_for('user.hidden_ads') }}" role="button">Посмотреть список скрытых объявлений</a> 
+        </div>
+        <div class="col-1"></div>
+
+        <div class="col-9">
+            {% if snowboards %}
+            {% for snowboard in snowboards %}
+            <div class="row">
+                <div class="col-3 snowboard_photo block">
+                    {% if snowboard.photo_links %}
+                    <img src="{{ snowboard.photo_links[0].photo_link }}" alt="">
+                    {% else %}
+                    <img src="{{ url_for('product.render_image', snowboard_id=snowboard.id) }}" alt="">
+                    {% endif %}
+                </div>
+                <div class="col-6 block">
+                    <h4><a href="{{ url_for('product.ad_page', snowboard_id=snowboard.id) }}">{{ snowboard.product_name }}</a></h4>
+                    {% if snowboard.ad_text %}
+                    <p class="ad_text">{{ snowboard.ad_text }}</p>
+                    {% endif %}
+                    <p><small class="text-muted">{{ snowboard.ad_placement_date.strftime('%d.%m.%Y в %H:%M') }}</small></p>
+                </div>
+                <div class="col-3 block">
+                    <p>{{ snowboard.price }} ₽</p>
+                    <div class="d-grid gap-2">
+                    <a class="btn btn-primary" href="{{ url_for('product.edit_ad', snowboard_id=snowboard.id) }}" role="button">Редактировать объявление</a>
+                    <a class="btn btn-primary" href="{{ url_for('user.hide_ad', snowboard_id=snowboard.id) }}" role="button">Скрыть объявление</a>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>У вас еще нет объявлений</p>
+            {% endif %}
+                
+        </div>
+            
+    </div>
+{% endblock %}

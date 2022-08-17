@@ -13,9 +13,19 @@
                     {% if snowboard.photo_links %}
                     {% for photo_link in snowboard.photo_links %}
                     <div class="carousel-item {% if loop.index == 1 %} active {% endif %}">  
-                        <img src="{{ photo_link.photo_link }}" class="d-block w-100" alt="Нет фото">
+                    <img src="{{ photo_link.photo_link }}" class="d-block w-100" alt="">
                     </div>
                     {% endfor %}
+                    {% elif photos_count %}
+                    {% for number in range(photos_count) %}
+                    <div class="carousel-item {% if loop.index == 1 %} active {% endif %}">  
+                    <img src="{{ url_for('product.render_image', snowboard_id=snowboard.id, photo_index=loop.index) }}" class="d-block w-100" alt="">
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div >  
+                    <img src="{{ url_for('static', filename='no-photo.jpg') }}" class="d-block w-100" alt="">
+                    </div>
                     {% endif %}
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -38,6 +48,16 @@
             {% if snowboard.address %}
             <p>{{ snowboard.address }}</p>
             {% endif %}
+            {% if snowboard.user %}
+            <h5 class="card-title">{{ snowboard.user.username }}</h5>
+            {% endif %}
+            {% if snowboard.phone_number %}
+            <p><a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                Показать телефон</a></p>
+            <div class="collapse" id="collapseExample">
+            <div class="card card-body"  style="width: 300px;">{{ snowboard.phone_number }}</div>
+            </div>
+            {% endif %} 
             </div>
 
             </div>

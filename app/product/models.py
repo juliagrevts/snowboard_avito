@@ -3,7 +3,7 @@ from app.db import db
 
 class Snowboard(db.Model):
     __table_args__ = (
-        db.UniqueConstraint('product_name', 'price', 'ad_text', 'user_id', 'url'), 
+        db.UniqueConstraint('product_name', 'price', 'ad_text', 'user_id'), 
     )
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String(128), nullable=False, index=True)
@@ -11,11 +11,14 @@ class Snowboard(db.Model):
     address = db.Column(db.Text, nullable=True)
     price = db.Column(db.String(20), nullable=False, index=True)
     ad_text = db.Column(db.Text, index=True)
+    phone_number = db.Column(db.String(30), nullable=True)
     user_id = db.Column(
         db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'),
         index=True
     )
     url = db.Column(db.String, nullable=True)
+    mongodb_id = db.Column(db.String, nullable=True)
+    hidden = db.Column(db.Boolean, default=False)
     photo_links = db.relationship('SnowboardPhotoLink', backref='snowboard')
 
     def __repr__(self):

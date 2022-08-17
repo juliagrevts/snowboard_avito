@@ -176,7 +176,7 @@ def save_all_snowboards(filename: str = 'snowboards_links.txt'):
                 'из-за {driver_exception}, иду дальше')
                 continue 
             
-    driver.close()
+    driver.quit()
 
 
 def save_snowboard(driver, snowboard):
