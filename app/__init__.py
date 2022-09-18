@@ -4,8 +4,8 @@ from flask_migrate import Migrate
 
 from app.db import db
 from app.product.models import Snowboard, SnowboardPhotoLink
-from app.product.views import blueprint as product_blueprint
 from app.user.models import User
+from app.product.views import blueprint as product_blueprint
 from app.user.views import blueprint as user_blueprint
 
 
