@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+
+            <form action="" method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.product_name.label }}
+                    {{ form.product_name() }}
+
+                    {% if form.product_name.errors %}
+                        {% for error in form.product_name.errors %}
+                        <div class="form-text" style="color: red;">
+                            {{ error }}
+                        </div>  
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                <div class="mb-3">
+                    {{ form.price.label }}
+                    <div class="input-group mb-3">
+                        {{ form.price() }}
+                        <span class="input-group-text">₽</span>
+                    </div>
+
+                    {% if form.price.errors %}
+                        {% for error in form.price.errors %}
+                        <div class="form-text" style="color: red;">
+                            {{ error }}
+                        </div>  
+                        {% endfor %}
+                    {% endif %}
+                    
+                </div>
+
+                <div class="mb-3">
+                    {{ form.address.label }}
+                    {{ form.address() }}
+
+                    {% if form.address.errors %}
+                        {% for error in form.address.errors %}
+                        <div class="form-text" style="color: red;">
+                            {{ error }}
+                        </div>  
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                <div class="mb-3">
+                    {{ form.ad_text.label }}
+                    {{ form.ad_text() }}
+
+                    {% if form.ad_text.errors %}
+                        {% for error in form.ad_text.errors %}
+                        <div class="form-text" style="color: red;">
+                            {{ error }}
+                        </div>  
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                <div class="mb-3">
+                    {{ form.phone_number.label }}
+                    {{ form.phone_number() }}
+
+                    {% if form.phone_number.errors %}
+                        {% for error in form.phone_number.errors %}
+                        <div class="form-text" style="color: red;">
+                            {{ error }}
+                        </div>  
+                        {% endfor %}
+                    {% endif %}
+                    
+                </div>
+
+                <div class="mb-3">
+                    {{ form.photos.label }}
+                    {{ form.photos() }}
+
+                    {% if form.photos.errors %}
+                        {% for error in form.photos.errors %}
+                        <div class="form-text" style="color: red;">
+                            {{ error }}
+                        </div>  
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                {{form.submit()}}
+            </form>
+
+
+
+        </div>
+
+    </div>
+
+{% endblock %}
